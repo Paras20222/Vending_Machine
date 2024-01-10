@@ -1,34 +1,16 @@
 #ifndef BUYER_H
 #define BUYER_H
 
-#include "model.h"   // Include necessary files
+#include "model.h"
 #include <unordered_map>
-#include <fstream>
 #include <iostream>
 #include <mutex>
 
 using namespace std;
 
-// Externally declared variables that are defined in Vending.cpp
-extern vector<Product> products;
 extern mutex mtx;
 
-/**
- * Displays all products available for purchase by the owner.
- * Shows product details, including ID, name, price, and stock.
- */
-string showAllProductsOwner() {
-    stringstream ss;
-    for (const auto& product : products) {
-        ss << product.displayName();
-    }
-    return ss.str();
-}
-
-/**
- * Displays only the products that are available for purchase (i.e., those with stock > 0).
- */
-string showAllProducts() {
+string showAllProducts(const vector<Product>& products) {
     stringstream ss;
     for (const auto& product : products) {
         if (product.getStock() > 0) {
@@ -38,105 +20,87 @@ string showAllProducts() {
     return ss.str();
 }
 
-/**
- * Prompts the user to choose a product and returns a pointer to the selected product.
- * Returns nullptr if the selected product is invalid.
- */
-Product* chooseProduct() {
-    cout << "Available Products:\n" << showAllProducts();
-    cout << "Select the number of the Product: ";
+Product* chooseProduct(vector<Product>& products) {
+    cout << "Available Products:\n" << showAllProducts(products);
+    cout << "Select product ID: ";
     int choice;
     cin >> choice;
-    if (choice > products.size()) {
-        cout << "Product not found!\n";
-        return nullptr;
+
+    if (choice > 0 && choice <= products.size()) {
+        return &products[choice - 1];
     }
-    return &products[choice - 1];
+
+    cout << "Invalid product.\n";
+    return nullptr;
 }
 
-/**
- * Handles the checkout process. If the user has enough cash, it updates the stock
- * and records the transaction.
- */
-bool checkout(Cart& cart) {
+bool checkout(Cart& cart, vector<Product>& products) {
     if (cart.isEmpty()) {
-        cout << "Cart is empty!\n";
+        cout << "Cart is empty.\n";
         return false;
     }
 
-    unordered_map<int, int> bought = cart.getCart();
     int total = cart.getTotal();
-    cout << "Please pay a total of Rs. " << total << endl;
+    cout << "Total: Rs. " << total << ". Pay: ";
     int cash;
     cin >> cash;
 
     if (cash >= total) {
+        // Update stock in product file
+        unordered_map<int, int> cartContents = cart.getCart();
         ifstream file("input.txt");
-        ofstream ofile("temp.txt");
+        ofstream tempFile("temp.txt");
         string line;
+
         while (getline(file, line)) {
             stringstream ss(line);
-            string newline, x;
-            getline(ss, x, ' ');
-            newline += x + " ";
-            int id = stoi(x);
-            getline(ss, x, ' ');
-            newline += x + " ";
-            getline(ss, x, ' ');
-            newline += x + " ";
-            getline(ss, x, ' ');
-            newline += to_string(stoi(x) - bought[id]) + "\n";
-            ofile << newline;
+            int productId;
+            ss >> productId;
+
+            if (cartContents.find(productId) != cartContents.end()) {
+                int newStock = stoi(line) - cartContents[productId];
+                line.replace(line.find_last_of(" "), string::npos, to_string(newStock));
+            }
+            tempFile << line << endl;
         }
         file.close();
-        ofile.close();
+        tempFile.close();
+
         remove("input.txt");
         rename("temp.txt", "input.txt");
 
-        ofstream outfile("profit.txt", ios::app);
-        outfile << cart.viewCart() + "\n";
-        outfile.close();
+        ofstream profitFile("profit.txt", ios::app);
+        profitFile << cart.viewCart() + "\n";
+        profitFile.close();
+
         cout << "Change: Rs. " << cash - total << "\n";
-        cout << "Thank you for shopping :)\n";
         return true;
     } else {
-        cout << "Insufficient funds\n";
+        cout << "Insufficient funds.\n";
         return false;
     }
 }
 
-/**
- * Main function for the buyer. Allows the buyer to add products to their cart,
- * view their cart, and proceed to checkout.
- */
-void buyer() {
-    int action;
+void buyer(vector<Product>& products) {
     Cart cart;
     while (true) {
-        // Display the options for the buyer
         cout << "(1) Add Item\n(2) View Cart\n(3) Checkout\n";
+        int action;
         cin >> action;
 
         if (action == 1) {
-            // Add item to cart
-            Product* p = chooseProduct();  // Get product to add
-            if (p != nullptr) {
-                lock_guard<std::mutex> lock(mtx);  // Ensure thread safety
-                cart.addProduct(*p);  // Add product to cart
-                cout << "Product added to cart.\n";
+            Product* p = chooseProduct(products);
+            if (p) {
+                lock_guard<mutex> lock(mtx);
+                cart.addProduct(*p);
+                cout << "Added to cart.\n";
             }
         } else if (action == 2) {
-            // View the current cart
             cout << cart.viewCart();
         } else if (action == 3) {
-            // Proceed to checkout
-            if (checkout(cart)) {
-                break;  // Exit the loop after successful checkout
-            }
-        } else {
-            cout << "Invalid action. Please select a valid option.\n";
+            if (checkout(cart, products)) break;
         }
     }
 }
 
-#endif // BUYER_H
+#endif

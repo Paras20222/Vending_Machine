@@ -1,5 +1,6 @@
-1 Lays 20 2
-2 Kurkure 20 1
+1 2
+
+2 Kurkure 201
 3 Nestle-Coffee 60 4
 4 Rice-Cracker 10 3
 5 Apple-Cider-Vinegar 100 1
@@ -7,3 +8,4 @@
 7 Pringles 90 4
 8 Gatorade 50 4
 9 KitKat 30 1
+10 CocoCola 90 10

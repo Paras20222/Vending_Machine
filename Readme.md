@@ -1,13 +1,21 @@
-# Vending-machine
-Implementation of Vending machine utilities for both buyer and owner.
-As owner-
-Number of products we have in stock will be shown to buyer.
-Can add new products or update stock of existing products in our machine.
-Can see profit earned till the date.
-As buyer-
-Can add items to the cart.
-Can view items in the cart.
-Can checkout on successfull transactions.
+# Vending Machine Application
 
-The program uses text file to keep track of items available in stock and adding new stock.
-The stock gets updated after each purchase.
+This is a **C++-based Vending Machine** application, simulating a vending machine with features for both **buyers** and **owners**. Buyers can browse products, add them to their cart, and checkout. Owners can add products, manage stock, and view profits.
+
+## Features
+
+- **Buyer Features:**
+  - View available products.
+  - Add products to the cart.
+  - View the cart and proceed to checkout.
+  
+- **Owner Features:**
+  - Register as a new owner or sign in with existing credentials.
+  - Add new products to the inventory.
+  - Update stock quantities of existing products.
+  - View profits accumulated from sales.
+
+## Requirements
+
+- **C++ Compiler**: This project is written in C++ and requires a C++11 compatible compiler.
+- **Libraries**: The code uses standard C++ libraries, so no external dependencies are required.
