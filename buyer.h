@@ -108,7 +108,7 @@ void buyer(vector<Product>& products) {
 
             if (p) {
                 lock_guard<mutex> lock(mtx);
-                cart.addProduct(*p, quantity);  // ✅ Pass quantity to addProduct
+                cart.addProduct(*p, quantity);  
                 cout << "Added " << quantity << " units to cart.\n";
             }
         } else if (action == 2) {
