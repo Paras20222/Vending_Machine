@@ -9,7 +9,7 @@ This project is a **multi-user Vending Machine system** that allows customers to
   - Add products to cart with a specified quantity
   - Prevents adding more items than available stock
   - View cart with total price breakdown
-  - Secure checkout with cash payment and automatic stock update
+  - Secure checkout with cash payment and automatic stock updates
   
 - **Owner Mode**
   - View all products and their stock levels
