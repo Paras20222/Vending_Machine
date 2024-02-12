@@ -1,0 +1,18 @@
+ Kurkure x1     Rs. 20
+ Total Price = Rs. 20
+
+ Kurkure x1     Rs. 20
+ Total Price = Rs. 20
+
+ Gatorade x1     Rs. 50
+ Total Price = Rs. 50
+
+  x1     Rs. -1222026992
+ Total Price = Rs. -1222026992
+
+ Rice-Cracker x2     Rs. 20
+ Total Price = Rs. 20
+
+ Nestle-Coffee x2     Rs. 120
+ Total Price = Rs. 120
+

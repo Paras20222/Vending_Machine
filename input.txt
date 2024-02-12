@@ -1,9 +1,20 @@
-1 Lays 20 2
-2 Kurkure 20 1
-3 Nestle-Coffee 60 4
-4 Rice-Cracker 10 3
-5 Apple-Cider-Vinegar 100 1
-6 5Star-3D 30 5
-7 Pringles 90 4
-8 Gatorade 50 4
-9 KitKat 30 2
+1 Nestle-Coffee 58
+2 Rice-Cracker 8
+3 Apple-Cider-Vinegar 100
+4 5Star-3D 30
+5 Pringles 90
+6 Gatorade 50
+7 KitKat 30
+8 CocaCola 90
+9 Pepsi 85
+10 Oreo 50
+11 Lays 40
+12 DairyMilk 35
+13 RedBull 120
+14 Sprite 85
+15 Snickers 45
+16 Maggi 55
+17 Tropicana 110
+18 Bourbon 35
+19 Kurkure 25
+20 Frooti 35

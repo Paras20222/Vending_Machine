@@ -1,139 +1,122 @@
+#ifndef BUYER_H
+#define BUYER_H
+
 #include "model.h"
-#include<unordered_map>
-#include<fstream>
-#include<iostream>
-#include<vector>
-#include<string.h>
-#include<sstream>
+#include <unordered_map>
+#include <iostream>
+#include <mutex>
 
 using namespace std;
 
-vector<Product> products;
+extern mutex mtx;
 
-void getproducts() {
-    products.clear();
-    ifstream infile;
-    infile.open("input.txt");
-    if(!infile){
-        cout<<"file can't be opened";
-    }
-    string line;
-    while(getline(infile,line)){
-        stringstream ss(line);
-        string x;
-        getline(ss,x,' ');
-        int id=stoi(x);
-        string name;
-        getline(ss,name,' ');
-        // x="";
-        getline(ss,x,' ');
-        int price = stoi(x);
-        // x="";
-        getline(ss,x,' ');
-        int stock = stoi(x);
-        Product newproduct(id,name,price,stock);
-        products.push_back(newproduct);    
-    }
-    infile.close();
-}
-string showallproductsowner() {
-    string s;
-    for (auto i : products) {
-        s += i.displayname();
-    }
-    return s;
-}
-string showallproducts() {
-    string s;
-    for (auto i: products) {
-        if (i.getstock() > 0) {
-            s += i.displayname();
+string showAllProducts(const vector<Product>& products) {
+    stringstream ss;
+    for (const auto& product : products) {
+        if (product.getStock() > 0) {
+            ss << product.displayName();
         }
     }
-    return s;
+    return ss.str();
 }
-Product* chooseproduct() {
-    cout<< " Available Products : \n"<<showallproducts();
-    cout<<" Select the number of the Product : ";
+
+Product* chooseProduct(vector<Product>& products, int& quantity) {
+    cout << "Available Products:\n" << showAllProducts(products);
+    cout << "Select product ID: ";
     int choice;
-    cin>>choice;
-    if(choice>products.size()){
-        cout<<" Product not found!";
-        return NULL;
+    cin >> choice;
+
+    if (choice > 0 && choice <= products.size()) {
+        Product* selectedProduct = &products[choice - 1];
+
+        cout << "Enter quantity: ";
+        cin >> quantity;
+
+        if (quantity > 0 && quantity <= selectedProduct->getStock()) {
+            return selectedProduct;
+        } else {
+            cout << "Insufficient stock available. Only " << selectedProduct->getStock() << " in stock.\n";
+            return nullptr;
+        }
     }
-    return &products[choice-1];
+
+    cout << "Invalid product.\n";
+    return nullptr;
 }
 
-bool Checkout(Cart &cart){
-    if(cart.isEmpty()){
+
+
+bool checkout(Cart& cart, vector<Product>& products) {
+    if (cart.isEmpty()) {
+        cout << "Cart is empty.\n";
         return false;
     }
-    unordered_map<int,int> bought = cart.getcart();
-    int total=cart.getTotal();
-    cout<<" Please pay a total of Rs. "<<total<<endl;
-    int cash;
-    cin>>cash;
-    if(cash>=total){
+
+    int total = cart.getTotal();
+    cout << "Total: Rs. " << total << ". Pay: ";
+    long long cash;  // Use long long to handle large inputs
+    cin >> cash;
+
+    if (cash >= total) {
+        unordered_map<int, int> cartContents = cart.getCart();
         ifstream file("input.txt");
-        ofstream ofile("temp.txt");
+        ofstream tempFile("temp.txt");
         string line;
-        while(getline(file,line)) {
+
+        while (getline(file, line)) {
             stringstream ss(line);
-            string newline;
-            string x;
-            getline(ss , x , ' ');
-            newline += x + " ";
-            int id = stoi(x);
-            getline(ss , x , ' ');
-            newline += x + " ";
-            getline(ss , x , ' ');
-            newline += x + " ";
-            getline(ss , x , ' ');
-            newline += to_string(stoi(x)-bought[id]) + "\n";
-            ofile << newline;
+            int productId, stock;
+            string name;
+            
+            ss >> productId >> name >> stock;  // Extract product ID, name, and stock properly
+
+            if (cartContents.find(productId) != cartContents.end()) {
+                stock -= cartContents[productId];  // Deduct purchased quantity
+            }
+
+            tempFile << productId << " " << name << " " << stock << endl;
         }
+
         file.close();
-        ofile.close();
+        tempFile.close();
+
         remove("input.txt");
-        rename("temp.txt" , "input.txt");
-        ofstream outfile("profit.txt",ios::app);
-        string x = cart.viewcart() + "\n";
-        
-        outfile << x;
-        outfile.close();
-        cout<<" Change -- Rs. "<<cash-total<<"\n";
-        cout<<" Thankyou for shopping :) \n";
+        rename("temp.txt", "input.txt");
+
+        ofstream profitFile("profit.txt", ios::app);
+        profitFile << cart.viewCart() + "\n";
+        profitFile.close();
+
+        cout << "Change: Rs. " << cash - total << "\n";
         return true;
-    }
-    else{
-        cout<<" Insuficient Cash\n";
+    } else {
+        cout << "Insufficient funds.\n";
         return false;
     }
 }
-void buyer(){
-    
-    int action;
+
+void buyer(vector<Product>& products) {
     Cart cart;
-    while(true){
-        cout<<"(1) Add Item\n"<<"(2) View Cart\n"<<"(3) Checkout\n";
-        cin>>action;
+    while (true) {
+        cout << "(1) Add Item\n(2) View Cart\n(3) Checkout\n";
+        int action;
+        cin >> action;
 
-        if(action==1){
-            Product* p = chooseproduct();
-            if (p != NULL) {
-                cart.addproduct(*p);
-            }
-        }
-        
-        if(action==2){
-            string s=cart.viewcart();
-            cout<<s;
-        }
+        if (action == 1) {
+            int quantity;
+            Product* p = chooseProduct(products, quantity);
 
-        if(action==3){
-            if(Checkout(cart)){
-                break;
+            if (p) {
+                lock_guard<mutex> lock(mtx);
+                cart.addProduct(*p, quantity);  // ✅ Pass quantity to addProduct
+                cout << "Added " << quantity << " units to cart.\n";
             }
+        } else if (action == 2) {
+            cout << cart.viewCart();
+        } else if (action == 3) {
+            if (checkout(cart, products)) break;
         }
     }
 }
+
+#endif
