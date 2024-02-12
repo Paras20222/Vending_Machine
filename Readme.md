@@ -24,7 +24,6 @@ This project is a **multi-user Vending Machine system** that allows customers to
 ## Installation & Setup
 ### Prerequisites
 - C++ compiler (GCC or Clang)
-- Make (optional for build automation)
 - Git (for version control)
 
 ### Steps
