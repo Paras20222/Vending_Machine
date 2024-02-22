@@ -69,7 +69,7 @@ void addProduct(const Product& product, int quantity) {
             return;
         }
 
-        // Update quantity in cart
+        // Update quantity in the cart
         items[product.id].quantity += quantity;
     } else {
         // Ensure first-time addition doesn't exceed stock
