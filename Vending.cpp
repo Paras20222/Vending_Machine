@@ -54,7 +54,6 @@ void addItems(vector<Product>& products) {
         products.push_back(Product(id, name, price, stock));
         cout << "Product added successfully.\n";
     } else if (choice == 2) {
-        // Update stock functionality
         cout << "Enter product ID to update stock: ";
         int id;
         cin >> id;
