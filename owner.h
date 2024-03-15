@@ -11,7 +11,7 @@ using namespace std;
 // Declare the seeProfit function
 void seeProfit();
 
-// Declare the owner function
+// Declare the owner function here
 void owner(vector<Product>& products);
 
 #endif
