@@ -4,7 +4,7 @@
 4 5Star-3D 30
 5 Pringles 90
 6 Gatorade 50
-7 KitKat 30
+7 KitKat 35
 8 CocaCola 90
 9 Pepsi 85
 10 Oreo 50
