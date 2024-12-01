@@ -121,6 +121,7 @@ void buyer(){
         if(action==1){
             Product* p = chooseproduct();
             if (p != NULL) {
+                lock_guard<std::mutex> lock(mtx);
                 cart.addproduct(*p);
             }
         }
