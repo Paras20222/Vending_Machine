@@ -1,7 +1,7 @@
 #include<iostream>
 #include<string>
-// #include "model.h"
-// #include "buyer.h"
+#include "model.h"
+#include "buyer.h"
 #include "owner.h"
 using namespace std;
 
