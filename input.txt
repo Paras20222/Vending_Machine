@@ -6,4 +6,4 @@
 6 5Star-3D 30 5
 7 Pringles 90 4
 8 Gatorade 50 4
-9 KitKat 30 2
+9 KitKat 30 1
